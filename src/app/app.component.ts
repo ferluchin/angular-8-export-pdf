@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Resume, Experience, Education, Skill } from './resume';
 import { ScriptService } from './script.service';
-declare let pdfMake: any ;
+declare let pdfMake: any;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -59,12 +59,44 @@ export class AppComponent {
     this.resume = new Resume();
   }
 
+  getBase64ImageFromURL(url) {
+    return new Promise((resolve, reject) => {
+      var img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+
+      img.onload = () => {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        var dataURL = canvas.toDataURL("image/png");
+
+        resolve(dataURL);
+      };
+
+      img.onerror = error => {
+        reject(error);
+      };
+
+      img.src = url;
+    });
+  }
+
+
   getDocumentDefinition() {
     sessionStorage.setItem('resume', JSON.stringify(this.resume));
     return {
       content: [
+        // {
+        //   image: this.getBase64ImageFromURL(
+        //     "https://images.pexels.com/photos/209640/pexels-photo-209640.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=300"
+        //   )
+        // },
         {
-          text: 'RESUME',
+          text: 'FORMULARIO DE PROYECTOS DE INVESTIGACIÓN E INNOVACIÓN',
           bold: true,
           fontSize: 20,
           alignment: 'center',
@@ -72,18 +104,29 @@ export class AppComponent {
         },
         {
           columns: [
+
             [{
-              text: this.resume.name,
+              text: 'TITULO: ' + this.resume.name,
               style: 'name'
             },
             {
-              text: this.resume.address
+              text: 'Facultad: ' + this.resume.address
             },
             {
-              text: 'Email : ' + this.resume.email,
+              text: 'Departamento : ' + this.resume.email,
             },
             {
-              text: 'Contant No : ' + this.resume.contactNo,
+              text: 'Grupo de Investigacion al que pertenece el Proyecto: ' + this.resume.contactNo,
+            },
+            {
+              text: 'Dominio Académico: ' + this.resume.contactNo,
+            },
+            {
+              text: 'Línea de Investigación: ' + this.resume.contactNo,
+            },
+
+            {
+              text: 'Programa de Investigación: ' + this.resume.contactNo,
             },
             {
               text: 'GitHub: ' + this.resume.socialProfile,
@@ -91,9 +134,8 @@ export class AppComponent {
               color: 'blue',
             }
             ],
-            [
-              this.getProfilePicObject()
-            ]
+
+
           ]
         },
         {
@@ -101,19 +143,19 @@ export class AppComponent {
           style: 'header'
         },
         {
-          columns : [
+          columns: [
             {
-              ul : [
+              ul: [
                 ...this.resume.skills.filter((value, index) => index % 3 === 0).map(s => s.value)
               ]
             },
             {
-              ul : [
+              ul: [
                 ...this.resume.skills.filter((value, index) => index % 3 === 1).map(s => s.value)
               ]
             },
             {
-              ul : [
+              ul: [
                 ...this.resume.skills.filter((value, index) => index % 3 === 2).map(s => s.value)
               ]
             }
@@ -142,12 +184,12 @@ export class AppComponent {
           style: 'sign'
         },
         {
-          columns : [
-              { qr: this.resume.name + ', Contact No : ' + this.resume.contactNo, fit : 100 },
-              {
+          columns: [
+            { qr: this.resume.name + ', Contact No : ' + this.resume.contactNo, fit: 100 },
+            {
               text: `(${this.resume.name})`,
               alignment: 'right',
-              }
+            }
           ]
         }
       ],
@@ -157,31 +199,31 @@ export class AppComponent {
         subject: 'RESUME',
         keywords: 'RESUME, ONLINE RESUME',
       },
-        styles: {
-          header: {
-            fontSize: 18,
-            bold: true,
-            margin: [0, 20, 0, 10],
-            decoration: 'underline'
-          },
-          name: {
-            fontSize: 16,
-            bold: true
-          },
-          jobTitle: {
-            fontSize: 14,
-            bold: true,
-            italics: true
-          },
-          sign: {
-            margin: [0, 50, 0, 10],
-            alignment: 'right',
-            italics: true
-          },
-          tableHeader: {
-            bold: true,
-          }
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 20, 0, 10],
+          decoration: 'underline'
+        },
+        name: {
+          fontSize: 16,
+          bold: true
+        },
+        jobTitle: {
+          fontSize: 14,
+          bold: true,
+          italics: true
+        },
+        sign: {
+          margin: [0, 50, 0, 10],
+          alignment: 'right',
+          italics: true
+        },
+        tableHeader: {
+          bold: true,
         }
+      }
     };
   }
 
@@ -252,12 +294,13 @@ export class AppComponent {
     };
   }
 
+
   getProfilePicObject() {
     if (this.resume.profilePic) {
       return {
-        image: this.resume.profilePic ,
+        image: this.resume.profilePic,
         width: 75,
-        alignment : 'right'
+        alignment: 'right'
       };
     }
     return null;
